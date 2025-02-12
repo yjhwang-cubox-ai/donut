@@ -1,4 +1,12 @@
-from transformers import DonutProcessor, VisionEncoderDecoderModel
+from transformers import VisionEncoderDecoderConfig, DonutProcessor, VisionEncoderDecoderModel
+
+def init_model_config(config):
+    model_config = VisionEncoderDecoderConfig.from_pretrained(
+        config.model_name_or_path, cache_dir=config.cache_dir
+    )
+    model_config.encoder.image_size = config.image_size
+    model_config.decoder.max_length = config.max_length
+    return model_config
 
 def init_processor(config):
     """DonutProcessor 초기화 및 설정"""

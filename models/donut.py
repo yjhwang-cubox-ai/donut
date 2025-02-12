@@ -4,25 +4,15 @@ import torch
 import torch.nn.functional as F
 import lightning as L
 from nltk import edit_distance
-from transformers import VisionEncoderDecoderModel, VisionEncoderDecoderConfig, DonutProcessor
-from models.model_setup import init_processor, init_model
+from models.model_setup import init_model_config, init_processor, init_model
 
 class Donut(L.LightningModule):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.model_config = self._init_model_config()
+        self.model_config = init_model_config(self.config)
         self.processor = init_processor(self.config)
         self.model = init_model(self.config, self.model_config, self.processor)
-
-    def _init_model_config(self):
-        """모델 configuration 초기화"""
-        model_config = VisionEncoderDecoderConfig.from_pretrained(
-            self.config.model_name_or_path, cache_dir=self.config.cache_dir
-        )
-        model_config.encoder.image_size = self.config.image_size
-        model_config.decoder.max_length = self.config.max_length
-        return model_config
     
     def training_step(self, batch, batch_idx):
         pixel_values, labels, _ = batch

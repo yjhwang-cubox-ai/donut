@@ -1,6 +1,7 @@
 from transformers import VisionEncoderDecoderConfig, DonutProcessor, VisionEncoderDecoderModel
+from configs.config import config
 
-def init_model_config(config):
+def init_model_config():
     model_config = VisionEncoderDecoderConfig.from_pretrained(
         config.model_name_or_path, cache_dir=config.cache_dir
     )
@@ -8,17 +9,17 @@ def init_model_config(config):
     model_config.decoder.max_length = config.max_length
     return model_config
 
-def init_processor(config):
+def init_processor():
     """DonutProcessor 초기화 및 설정"""
     processor = DonutProcessor.from_pretrained(
         config.model_name_or_path, cache_dir=config.cache_dir
     )
     # 이미지 프로세서의 size는 (width, height) 순서여야 함
-    processor.image_processor.size = config.mage_size[::-1]
+    processor.image_processor.size = config.image_size[::-1]
     processor.image_processor.do_align_long_axis = False
     return processor
 
-def init_model(config, model_config, processor):
+def init_model(model_config, processor):
     """VisionEncoderDecoderModel 초기화 및 토큰 관련 설정"""
     model = VisionEncoderDecoderModel.from_pretrained(
         config.model_name_or_path, config=model_config, cache_dir=config.cache_dir

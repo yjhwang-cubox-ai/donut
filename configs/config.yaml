@@ -1,0 +1,29 @@
+wandb:
+  project_name: 'svtr-Lao-ID'
+  wandb_name: 'pretraining_1228'
+  api-key: '53f960c86b81377b89feb5d30c90ddc6c3810d3a'
+
+model:
+  model_name_or_path: "naver-clova-ix/donut-base"
+  cache_dir: "./hub/model"
+  image_size: [1280, 960]
+  max_length: 768
+
+data:
+  dataset_name_or_path: "lao-id"
+  batch_size: 64
+  num_workers: 4
+
+training:
+  max_epochs: 300
+  val_check_interval: 1
+  gradient_clip_val: 1.0
+  num_training_samples_per_epoch: 800
+  lr: 3e-5
+  train_batch_sizes: [8]
+  val_batch_sizes: [1]
+  # "seed":2022,
+  num_nodes": 1
+  warmup_steps": 300 # 800/8*30/10, 10%
+  result_path: "./result"
+  verbose: True

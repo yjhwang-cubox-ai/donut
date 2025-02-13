@@ -34,6 +34,8 @@ class CordDataset(Dataset):
         self.dataset_length = len(self.dataset)
         
         self.gt_token_sequences = []
+        self.added_tokens = []
+
         for sample in self.dataset:
             ground_truth = json.loads(sample['ground_truth'])
             if "gt_parses" in ground_truth:
@@ -57,6 +59,7 @@ class CordDataset(Dataset):
             
         self.add_tokens([self.task_start_token, self.prompt_end_token])
         self.prompt_end_token_id = self.processor.tokenizer.convert_tokens_to_ids(self.prompt_end_token)
+        print(f'added_tokens"\n {self.added_tokens} \n len: {len(self.added_tokens)}')
     
     def json2token(self, obj:Any, update_special_tokens_for_json_key:bool = True, sort_json_key:bool = True):
         if type(obj) == dict:
@@ -84,7 +87,7 @@ class CordDataset(Dataset):
         else:
             obj = str(obj)
             # 만약 이미 특별 토큰 리스트에 있다면 해당 형식으로 변환
-            if f"<{obj}/>" in self.processor.tokenizer.get_added_vocab():
+            if f"<{obj}/>" in self.added_tokens:
                 obj = f"<{obj}/>"  # 범주형 특별 토큰일 경우
             return obj
     
@@ -92,6 +95,7 @@ class CordDataset(Dataset):
         newly_added_num = self.processor.tokenizer.add_tokens(list_of_tokens)
         if newly_added_num > 0:
             self.model.decoder.resize_token_embeddings(len(self.processor.tokenizer))
+            self.added_tokens.extend(list_of_tokens)
     
     def __len__(self) -> int:
         return self.dataset_length

@@ -54,9 +54,9 @@ class Donut(L.LightningModule):
             scores.append(edit_distance(pred, answer) / max(len(pred), len(answer)))
 
             if config.training.verbose==False and len(scores) == 1:
-                print(f"Prediction: {pred}")
-                print(f"    Answer: {answer}")
-                print(f" Normed ED: {scores[0]}")
+                print(f"\nPrediction: {pred}")
+                print(f"\n    Answer: {answer}")
+                print(f"\n Normed ED: {scores[0]}\n")
 
         self.log("val_edit_distance", np.mean(scores))
         
@@ -65,3 +65,9 @@ class Donut(L.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=config.training.lr)
         return optimizer
+    
+    def on_train_start(self):
+        print("학습을 시작합니다!\n")
+        print("pad_token_id 와 decoder_start_token_id 를 설정합니다!\n")
+        self.model.config.pad_token_id = self.processor.tokenizer.pad_token_id
+        self.model.config.decoder_start_token_id = self.processor.tokenizer.convert_tokens_to_ids(['<s_cord-v2>'])[0]

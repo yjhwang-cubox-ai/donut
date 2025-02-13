@@ -27,7 +27,7 @@ class DonutDataset(L.LightningDataModule):
         #                     sort_json_key=False)
     
     def train_dataloader(self):
-        return DataLoader(self.valid_dataset, batch_size=config.data.train_batch_size, shuffle=True, num_workers=config.data.num_workers)
+        return DataLoader(self.train_dataset, batch_size=config.data.train_batch_size, shuffle=True, num_workers=config.data.num_workers)
     
     def val_dataloader(self):
         return DataLoader(self.valid_dataset, batch_size=config.data.val_batch_size, shuffle=False, num_workers=config.data.num_workers)

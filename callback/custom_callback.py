@@ -20,6 +20,8 @@ class HFTopKModelCheckpoint(L.Callback):
         self.top_k_models = []
         
         os.makedirs(save_dir, exist_ok=True)
+        
+        self._save_training_info()
 
     def on_validation_epoch_end(self, trainer, pl_module):
         # trainer.callback_metrics에서 validation metric 가져오기
@@ -54,7 +56,7 @@ class HFTopKModelCheckpoint(L.Callback):
             
             os.makedirs(model_dir, exist_ok=True)
             print(
-                f"Validation '{self.monitor}' improved to {current_score:.4f}. "
+                f"\nValidation '{self.monitor}' improved to {current_score:.4f}. "
                 f"Checkpoint saved at {model_dir}. (Current {self.monitor}: {current_score:.4f}, "
                 f"Best {self.monitor} so far: {self.top_k_models[0][0]:.4f})"                
             ) if self.top_k_models else print()

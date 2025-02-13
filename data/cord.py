@@ -100,7 +100,7 @@ class CordDataset(Dataset):
         sample = self.dataset[index]
         
         # input
-        pixel_values = self.processor(sample["image"], return_tensors="pt").pixel_values
+        pixel_values = self.processor(sample["image"], return_tensors="pt", legacy=False, add_special_tokens=True).pixel_values
         pixel_values = pixel_values.squeeze()
         
         # target

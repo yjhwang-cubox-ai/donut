@@ -13,6 +13,9 @@ def train():
     model = Donut()
     # 데이터 모듈 준비
     dataset = DonutDataset(model=model.model, processor=model.processor)
+    # task_start_token 지정
+    tst_token_id = model.processor.tokenizer.convert_tokens_to_ids(config.model.task_start_token)
+    model.model.config.decoder_start_token_id = tst_token_id
     # logger 준비
     wandb_logger = WandbLogger(project=config.wandb.project, name=config.wandb.name)
     # 모델 저장 경로

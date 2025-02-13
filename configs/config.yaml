@@ -1,24 +1,29 @@
 wandb:
   project: 'Donut-finetuning'
-  name: 'finetunig-cord'
+  name: 'finetunig-cord-v3'
+  training_info:
+    purpose: 'custom callback'
+    date: '2025-02-13'
+    dataset: 'cord-v3'
+    additional_info: '커스텀 콜백이 제대로 동작하는지 확인, model 과 processor 를 HF 스타일로 저장 테스트'
 
 model:
   model_name_or_path: "naver-clova-ix/donut-base"
   cache_dir: "./hub/model"
   image_size:
-  - 1280
-  - 960
+  - 1280 # height
+  - 960 # width  
   max_length: 768
 
 data:
   dataset_name_or_path: "naver-clova-ix/cord-v2"
   cache_dir: "./hub/dataset"
-  train_batch_size: 1
+  train_batch_size: 2
   val_batch_size: 1
   num_workers: 4
 
 training:
-  max_epochs: 30
+  max_epochs: 5
   lr: !!float 3e-5
   warmup_steps: 300 # 800/8*30/10, 10%
   result_path: "./result"

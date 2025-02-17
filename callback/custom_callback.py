@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import lightning as L
+from lightning.fabric.utilities.rank_zero import rank_zero_only
 
 class HFTopKModelCheckpoint(L.Callback):
     def __init__(self, 
@@ -19,11 +20,15 @@ class HFTopKModelCheckpoint(L.Callback):
         
         self.top_k_models = []
         
+        # 메인 프로세스에서만 기존 체크포인트를 삭제하고 training info를 저장
+        self._cleanup_save_dir()
+        # 모든 프로세스에서 save_dir이 존재하도록 함
         os.makedirs(save_dir, exist_ok=True)
-        
-        self._save_training_info()
 
     def on_validation_epoch_end(self, trainer, pl_module):
+        # 메인 프로세스가 아니라면 실행하지 않음
+        if not trainer.is_global_zero:
+            return
         # trainer.callback_metrics에서 validation metric 가져오기
         logs = trainer.callback_metrics
         current_score = logs.get(self.monitor)
@@ -51,22 +56,24 @@ class HFTopKModelCheckpoint(L.Callback):
         if qualifies:
             epoch = trainer.current_epoch
             step = trainer.global_step
-            # model_name이 제공되면 디렉토리 이름에 포함
+            # 디렉토리 이름 생성 (epoch, step, 점수를 포함)
             model_dir = os.path.join(self.save_dir, f"epoch-{epoch:03d}_step-{step:05d}_ED-{current_score:.4f}")
-            
             os.makedirs(model_dir, exist_ok=True)
-            print(
-                f"\nValidation '{self.monitor}' improved to {current_score:.4f}. "
-                f"Checkpoint saved at {model_dir}. (Current {self.monitor}: {current_score:.4f}, "
-                f"Best {self.monitor} so far: {self.top_k_models[0][0]:.4f})"                
-            ) if self.top_k_models else print()
+            if self.top_k_models:
+                print(
+                    f"\nValidation '{self.monitor}' improved to {current_score:.4f}. "
+                    f"Checkpoint saved at {model_dir}. (Current {self.monitor}: {current_score:.4f}, "
+                    f"Best {self.monitor} so far: {self.top_k_models[0][0]:.4f})"
+                )
+            else:
+                print(f"\nValidation '{self.monitor}' improved to {current_score:.4f}. Checkpoint saved at {model_dir}.")
+                
             # Hugging Face 방식으로 모델과 토크나이저 저장
             pl_module.model.save_pretrained(model_dir)
             pl_module.processor.tokenizer.save_pretrained(model_dir)
 
             # 현재 checkpoint 정보를 리스트에 추가
             self.top_k_models.append((current_score, model_dir))
-
             # 성능 기준으로 정렬 (mode에 따라 정렬 순서 달라짐)
             if self.mode == "min":
                 self.top_k_models.sort(key=lambda x: x[0])  # 낮은 loss가 앞쪽에 위치
@@ -81,6 +88,26 @@ class HFTopKModelCheckpoint(L.Callback):
 
     def _save_training_info(self):
         info_to_save = vars(self.training_info) if hasattr(self.training_info, '__dict__') else self.training_info
+        info_path = os.path.join(self.save_dir, "training_info.json")
+        with open(info_path, "w", encoding="utf-8") as f:
+            json.dump(info_to_save, f, indent=4, ensure_ascii=False)
+        print(f"Saved training info at {info_path}")
+    
+    @rank_zero_only
+    def _cleanup_save_dir(self):
+        if os.path.exists(self.save_dir):
+            for name in os.listdir(self.save_dir):
+                path = os.path.join(self.save_dir, name)
+                if os.path.isdir(path) and name.startswith("epoch-"):
+                    shutil.rmtree(path)
+        self._save_training_info()
+    
+    def _save_training_info(self):
+        info_to_save = (
+            vars(self.training_info)
+            if hasattr(self.training_info, '__dict__')
+            else self.training_info
+        )
         info_path = os.path.join(self.save_dir, "training_info.json")
         with open(info_path, "w", encoding="utf-8") as f:
             json.dump(info_to_save, f, indent=4, ensure_ascii=False)

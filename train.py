@@ -29,7 +29,7 @@ def train():
     trainer = L.Trainer(
             max_epochs=config.training.max_epochs,
             accelerator="gpu",
-            devices=1,
+            devices=8,
             num_nodes=1,
             logger=wandb_logger,
             callbacks=[checkpoint_callback]

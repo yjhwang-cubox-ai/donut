@@ -1,11 +1,11 @@
 wandb:
   project: 'Donut-finetuning'
-  name: 'finetunig-cord-v3'
+  name: 'finetunig-cord-v5'
   training_info:
-    purpose: 'custom callback'
+    purpose: 'task start token 적용'
     date: '2025-02-13'
     dataset: 'cord-v3'
-    additional_info: '커스텀 콜백이 제대로 동작하는지 확인, model 과 processor 를 HF 스타일로 저장 테스트'
+    additional_info: '그동안 task start token 을 따로 지정하지 않았다. 코드 수정후 학습해본다.'
 
 model:
   model_name_or_path: "naver-clova-ix/donut-base"
@@ -14,17 +14,18 @@ model:
   - 1280 # height
   - 960 # width  
   max_length: 768
+  task_start_token: "<s_cord-v2>"
 
 data:
   dataset_name_or_path: "naver-clova-ix/cord-v2"
   cache_dir: "./hub/dataset"
   train_batch_size: 2
-  val_batch_size: 1
+  val_batch_size: 2
   num_workers: 4
 
 training:
-  max_epochs: 5
+  max_epochs: 30
   lr: !!float 3e-5
   warmup_steps: 300 # 800/8*30/10, 10%
   result_path: "./result"
-  verbose: True
+  verbose: false

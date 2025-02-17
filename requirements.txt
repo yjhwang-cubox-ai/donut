@@ -1,0 +1,9 @@
+torch
+lightning
+transformers
+datasets
+sentencepiece
+wandb
+python-dotenv
+nltk
+tqdm

@@ -7,3 +7,6 @@ wandb
 python-dotenv
 nltk
 tqdm
+onnx
+onnxruntime
+onnxruntime-gpu

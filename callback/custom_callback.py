@@ -70,7 +70,7 @@ class HFTopKModelCheckpoint(L.Callback):
                 
             # Hugging Face 방식으로 모델과 토크나이저 저장
             pl_module.model.save_pretrained(model_dir)
-            pl_module.processor.tokenizer.save_pretrained(model_dir)
+            pl_module.processor.save_pretrained(model_dir)
 
             # 현재 checkpoint 정보를 리스트에 추가
             self.top_k_models.append((current_score, model_dir))
@@ -85,13 +85,6 @@ class HFTopKModelCheckpoint(L.Callback):
                 worst = self.top_k_models.pop()  # 리스트의 마지막 요소가 가장 낮은 성능
                 shutil.rmtree(worst[1])
                 print(f"Checkpoint {worst[1]} removed as it exceeded the top {self.top_k} limit.")
-
-    def _save_training_info(self):
-        info_to_save = vars(self.training_info) if hasattr(self.training_info, '__dict__') else self.training_info
-        info_path = os.path.join(self.save_dir, "training_info.json")
-        with open(info_path, "w", encoding="utf-8") as f:
-            json.dump(info_to_save, f, indent=4, ensure_ascii=False)
-        print(f"Saved training info at {info_path}")
     
     @rank_zero_only
     def _cleanup_save_dir(self):
@@ -100,6 +93,8 @@ class HFTopKModelCheckpoint(L.Callback):
                 path = os.path.join(self.save_dir, name)
                 if os.path.isdir(path) and name.startswith("epoch-"):
                     shutil.rmtree(path)
+        else:
+            os.makedirs(self.save_dir)
         self._save_training_info()
     
     def _save_training_info(self):

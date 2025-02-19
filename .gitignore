@@ -8,3 +8,4 @@ logs/
 Donut/
 Donut-finetuning/
 lightning_logs/
+tmp/

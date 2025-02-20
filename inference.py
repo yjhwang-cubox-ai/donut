@@ -1,19 +1,20 @@
 import re
 import json
-from transformers import DonutProcessor, VisionEncoderDecoderModel, AutoTokenizer
+from transformers import DonutProcessor, VisionEncoderDecoderModel, AutoTokenizer, GenerationConfig
 from datasets import load_dataset
 import torch
 from PIL import Image
 from tqdm import tqdm
 
-processor = DonutProcessor.from_pretrained("logs/Donut-finetuning/finetunig-cord-TEST/epoch-005_step-02400_ED-0.0631")
-model = VisionEncoderDecoderModel.from_pretrained("logs/Donut-finetuning/finetunig-cord-TEST/epoch-005_step-02400_ED-0.0631")
+processor = DonutProcessor.from_pretrained('epoch-023_step-01200_ED-0.0554')
+model = VisionEncoderDecoderModel.from_pretrained('epoch-023_step-01200_ED-0.0554')
+gen_config = GenerationConfig.from_pretrained('epoch-023_step-01200_ED-0.0554')
 
 
-image = Image.open("test-exam-train.jpg")
+image = Image.open("test_images/test-exam.jpg")
 pixel_values = processor(image, return_tensors="pt").pixel_values
 
-
+#"<s_cord-v2>", <s_synthdog>
 task_prompt = "<s_cord-v2>"
 decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt")["input_ids"]
 
@@ -30,8 +31,8 @@ outputs = model.generate(
     use_cache=True,
     num_beams=1,
     bad_words_ids=[[processor.tokenizer.unk_token_id]],
-    return_dict_in_generate=True,)
-    # output_scores=True,)
+    return_dict_in_generate=True,
+    output_scores=True,)
 
 
 

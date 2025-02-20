@@ -9,3 +9,8 @@ Donut/
 Donut-finetuning/
 lightning_logs/
 tmp/
+*.json
+*.safetensors
+*.model
+*.onnx
+test_images/

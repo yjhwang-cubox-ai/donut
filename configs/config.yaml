@@ -1,6 +1,6 @@
 wandb:
   project: 'Donut-finetuning'
-  name: 'finetunig-cord-v5'
+  name: 'finetunig-cord-TEST'
   training_info:
     purpose: 'task start token 적용'
     date: '2025-02-13'

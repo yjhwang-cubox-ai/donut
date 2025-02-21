@@ -34,8 +34,6 @@ outputs = model.generate(
     return_dict_in_generate=True,
     output_scores=True,)
 
-
-
 sequence = processor.batch_decode(outputs.sequences)[0]
 sequence = sequence.replace(processor.tokenizer.eos_token, "").replace(processor.tokenizer.pad_token, "")
 sequence = re.sub(r"<.*?>", "", sequence, count=1).strip()  # remove first task start token

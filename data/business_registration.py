@@ -33,11 +33,11 @@ class BRCDataset(Dataset):
 
     def __getitem__(self, idx):
         ann = self.annotations[idx]
-        image_path = ann["image"]
+        ann_image_path = ann["image"]
+        image_path = os.path.join(self.images_dir, os.path.basename(ann_image_path))
         ground_truth = ann["ground_truth"]
 
         # 실제 이미지 경로 구성
-        # image_path = os.path.join(self.images_dir, image_filename)
         image = Image.open(image_path).convert("RGB")
 
         # DonutProcessor로 이미지 전처리 -> pixel_values

@@ -20,7 +20,7 @@ def train():
     # Callback 준비
     checkpoint_callback = HFTopKModelCheckpoint(
         save_dir=save_dir,
-        monitor='train_loss',
+        monitor='val_loss',
         mode='min',
         save_top_k=3,
         training_info=config.wandb.training_info

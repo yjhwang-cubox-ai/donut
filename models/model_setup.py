@@ -19,6 +19,7 @@ def init_processor():
     # config.model.image_size[::-1]
     processor.image_processor.do_align_long_axis = True # True 가 더 적절하지 않나?(2025.03.04)
     processor.tokenizer.add_special_tokens({"additional_special_tokens": ["<s_ko>", "</s_ko>"]})
+    processor.tokenizer.eos_token_id = processor.tokenizer.convert_tokens_to_ids(["</s_ko>"])[0]
 
     special_tokens = ["<사업자등록번호>", "</사업자등록번호>", "<사업자종류>", "</사업자종류>", "<상호>", "</상호>", "<대표자>", "</대표자>", "<개업연월일>", "</개업연월일>", "<법인등록번호>", "</법인등록번호>", "<사업장소재지>", "</사업장소재지>", "<본점소재지>", "</본점소재지>", "<업태>", "</업태>", "<종목>", "</종목>", "<발급일자>", "</발급일자>", "<발급사유>", "</발급사유>", "<세무서명>", "</세무서명>"]
 

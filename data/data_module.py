@@ -46,14 +46,13 @@ class DocumentDataset(L.LightningDataModule):
     def setup(self, stage=None):
         if stage == 'fit' or stage is None:
             self.train_dataset = BRCDataset(
-                dataset_dir='donut_dataset',
-                processor=self.processor
-            )
-            # self.valid_dataset = CordDataset(model=self.model,
-            #                                 processor=self.processor,
-            #                                 split="validation", 
-            #                                 task_start_token=self.task_start_token,
-            #                                 sort_json_key=False)
+                                    dataset_dir='donut_dataset',
+                                    processor=self.processor
+                                )
+            self.valid_dataset = BRCDataset(
+                                    dataset_dir='donut_dataset_val',
+                                    processor=self.processor
+                                )
         # if stage == 'test' or stage is None:
         #     self.test_dataset = CORDDataset(model=self.model, processor=self.processor, split="test", task_start_token="<s_cord-v2>", prompt_end_token="<s_cord-v2>",
         #                     sort_json_key=False)
@@ -61,5 +60,5 @@ class DocumentDataset(L.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=config.data.train_batch_size, shuffle=True, num_workers=config.data.num_workers)
     
-    # def val_dataloader(self):
-    #     return DataLoader(self.valid_dataset, batch_size=config.data.val_batch_size, shuffle=False, num_workers=config.data.num_workers)
+    def val_dataloader(self):
+        return DataLoader(self.valid_dataset, batch_size=config.data.val_batch_size, shuffle=False, num_workers=config.data.num_workers)

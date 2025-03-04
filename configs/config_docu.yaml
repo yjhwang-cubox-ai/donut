@@ -1,0 +1,31 @@
+wandb:
+  project: 'Donut-Document'
+  name: 'brc_v1'
+  training_info:
+    purpose: '생성한 사업자등록증 데이터셋으로 학습'
+    date: '2025-03-04'
+    dataset: 'donut_dataset'
+    additional_info: '커스텀 데이터셋 학습 코드 검증 & 토큰 설정 방법 검토'
+
+model:
+  model_name_or_path: "naver-clova-ix/donut-base"
+  cache_dir: "./hub/model"
+  image_size:
+  - 1280 # height
+  - 960 # width  
+  max_length: 768
+  task_start_token: "<s_ko>"
+
+data:
+  dataset_name_or_path: "naver-clova-ix/cord-v2"
+  cache_dir: "./hub/dataset"
+  train_batch_size: 2
+  val_batch_size: 2
+  num_workers: 4
+
+training:
+  max_epochs: 30
+  lr: !!float 3e-5
+  warmup_steps: 300 # 800/8*30/10, 10%
+  result_path: "./result"
+  verbose: false

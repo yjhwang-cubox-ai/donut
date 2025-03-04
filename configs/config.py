@@ -12,7 +12,7 @@ def dict_to_namespace(d):
         return d
 
 current_dir = os.path.dirname(__file__)
-config_file = os.path.join(current_dir, 'config.yaml')
+config_file = os.path.join(current_dir, 'config_docu.yaml')
 with open(config_file, 'r') as file:
     config_dict = yaml.safe_load(file)
 

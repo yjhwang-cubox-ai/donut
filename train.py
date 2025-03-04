@@ -5,14 +5,14 @@ import lightning as L
 from lightning.pytorch.loggers import WandbLogger
 from configs.config import config
 from models.donut import Donut
-from data.data_module import DonutDataset
+from data.data_module import DonutDataset, DocumentDataset
 from callback.custom_callback import HFTopKModelCheckpoint
 
 def train():
     # 모델 모듈 준비
     model = Donut()
     # 데이터 모듈 준비
-    dataset = DonutDataset(model=model.model, processor=model.processor)
+    dataset = DocumentDataset(model=model.model, processor=model.processor)
     # logger 준비
     wandb_logger = WandbLogger(project=config.wandb.project, name=config.wandb.name)
     # 모델 저장 경로
@@ -20,7 +20,7 @@ def train():
     # Callback 준비
     checkpoint_callback = HFTopKModelCheckpoint(
         save_dir=save_dir,
-        monitor='val_edit_distance',
+        monitor='train_loss',
         mode='min',
         save_top_k=3,
         training_info=config.wandb.training_info
@@ -29,7 +29,7 @@ def train():
     trainer = L.Trainer(
             max_epochs=config.training.max_epochs,
             accelerator="gpu",
-            devices=8,
+            devices=1,
             num_nodes=1,
             logger=wandb_logger,
             callbacks=[checkpoint_callback]

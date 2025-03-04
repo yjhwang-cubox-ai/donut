@@ -15,7 +15,7 @@ class Donut(L.LightningModule):
         self.model = init_model(self.model_config, self.processor)
     
     def training_step(self, batch, batch_idx):
-        pixel_values, labels, _ = batch
+        pixel_values, labels = batch['pixel_values'], batch['labels']
         
         outputs = self.model(pixel_values, labels=labels)
         loss = outputs.loss
@@ -66,8 +66,8 @@ class Donut(L.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=config.training.lr)
         return optimizer
     
-    def on_train_start(self):
-        print("학습을 시작합니다!\n")
-        print("pad_token_id 와 decoder_start_token_id 를 설정합니다!\n")
-        self.model.config.pad_token_id = self.processor.tokenizer.pad_token_id
-        self.model.config.decoder_start_token_id = self.processor.tokenizer.convert_tokens_to_ids(['<s_cord-v2>'])[0]
+    # def on_train_start(self):
+    #     print("학습을 시작합니다!\n")
+    #     print("pad_token_id 와 decoder_start_token_id 를 설정합니다!\n")
+    #     self.model.config.pad_token_id = self.processor.tokenizer.pad_token_id
+    #     self.model.config.decoder_start_token_id = self.processor.tokenizer.convert_tokens_to_ids(['<s_cord-v2>'])[0]

@@ -4,15 +4,15 @@ import torch
 import torch.nn.functional as F
 import lightning as L
 from nltk import edit_distance
-from models.model_setup import init_model_config, init_processor, init_model
+# from models.model_setup import init_model_config, init_processor, init_model
+from models.model_setup import init_model_and_processor
 from configs.config import config
 
 class Donut(L.LightningModule):
-    def __init__(self):
+    def __init__(self, model, processor):
         super().__init__()
-        self.model_config = init_model_config()
-        self.processor = init_processor()
-        self.model = init_model(self.model_config, self.processor)
+        self.model = model
+        self.processor = processor
     
     def training_step(self, batch, batch_idx):
         pixel_values, labels = batch['pixel_values'], batch['labels']

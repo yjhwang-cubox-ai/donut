@@ -46,11 +46,11 @@ class DocumentDataset(L.LightningDataModule):
     def setup(self, stage=None):
         if stage == 'fit' or stage is None:
             self.train_dataset = BRCDataset(
-                                    dataset_dir='donut_dataset',
+                                    dataset_dir=config.data.dataset_name_or_path,
                                     processor=self.processor
                                 )
             self.valid_dataset = BRCDataset(
-                                    dataset_dir='donut_dataset_val',
+                                    dataset_dir='resource/donut_dataset_val',
                                     processor=self.processor
                                 )
         # if stage == 'test' or stage is None:

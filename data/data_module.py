@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader, random_split
 # from data.cord import CordDataset
 from data.business_registration import BRCDataset
 from configs.config import config
+from models.model_setup import init_processor
 
 # class DonutDataset(L.LightningDataModule):
 #     def __init__(self, model, processor):
@@ -37,10 +38,9 @@ from configs.config import config
     #     return DataLoader()
 
 class DocumentDataset(L.LightningDataModule):
-    def __init__(self, model, processor):
+    def __init__(self):
         super().__init__()
-        self.model = model
-        self.processor = processor
+        self.processor = init_processor()
     
     def setup(self, stage=None):
         if stage == 'fit' or stage is None:
@@ -49,7 +49,7 @@ class DocumentDataset(L.LightningDataModule):
                                     processor=self.processor
                                 )
             self.valid_dataset = BRCDataset(
-                                    dataset_dir='resource/donut_dataset_val',
+                                    dataset_dir='/purestorage/AILAB/AI_2/datasets/OCR/03_BRCDataset/val',
                                     processor=self.processor
                                 )
         # if stage == 'test' or stage is None:

@@ -19,14 +19,13 @@ def train():
 
     # 모델 모듈 준비
     model_start_time = time.time()
-    model, processor = init_model_and_processor()
-    model_module = Donut(model=model, processor=processor)
+    model_module = Donut()
     model_end_time = time.time()
     print(f"[시간 측정] 모델 초기화 시간: {model_end_time - model_start_time:.2f}초")
 
     # 데이터 모듈 준비
     data_start_time = time.time()
-    dataset = DocumentDataset(model=model, processor=processor)
+    dataset = DocumentDataset()
     data_end_time = time.time()
     print(f"[시간 측정] 데이터 모듈 초기화 시간: {data_end_time - data_start_time:.2f}초")
 
@@ -56,7 +55,7 @@ def train():
     trainer = L.Trainer(
             max_epochs=config.training.max_epochs,
             accelerator="gpu",
-            devices=1,
+            devices=8,
             num_nodes=1,
             profiler=profiler,
             logger=wandb_logger,

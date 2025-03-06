@@ -7,14 +7,23 @@ from nltk import edit_distance
 # from models.model_setup import init_model_config, init_processor, init_model
 from models.model_setup import init_model_and_processor
 from configs.config import config
+import time
 
 class Donut(L.LightningModule):
-    def __init__(self, model, processor):
+    def __init__(self):
         super().__init__()
-        self.model = model
-        self.processor = processor
+        self.model = None
+        self.processor = None
+    
+    def setup(self, stage=None):
+        print("="*30)
+        print(f"stage: {stage}")
+        print("="*30)
+
+        self.model, self.processor = init_model_and_processor()
     
     def training_step(self, batch, batch_idx):
+        print(f"[시간 측정] training_step 시작: {time.strftime('%Y-%m-%d %H:%M:%S')}")
         pixel_values, labels = batch['pixel_values'], batch['labels']
         
         outputs = self.model(pixel_values, labels=labels)

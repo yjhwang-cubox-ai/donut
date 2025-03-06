@@ -3,10 +3,12 @@ from dotenv import load_dotenv
 import torch
 import lightning as L
 from lightning.pytorch.loggers import WandbLogger
+from lightning.pytorch.profilers import SimpleProfiler
 from configs.config import config
 from models.donut import Donut
 from data.data_module import DonutDataset, DocumentDataset
 from callback.custom_callback import HFTopKModelCheckpoint
+
 
 def train():
     # 모델 모듈 준비
@@ -26,11 +28,14 @@ def train():
         training_info=config.wandb.training_info
     )
 
+    profiler = SimpleProfiler(dirpath=".", filename="perf_logs")
+
     trainer = L.Trainer(
             max_epochs=config.training.max_epochs,
             accelerator="gpu",
             devices=1,
             num_nodes=1,
+            profiler=profiler,
             logger=wandb_logger,
             callbacks=[checkpoint_callback]
     )

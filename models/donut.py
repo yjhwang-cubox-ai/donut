@@ -4,7 +4,6 @@ import torch
 import torch.nn.functional as F
 import lightning as L
 from nltk import edit_distance
-# from models.model_setup import init_model_config, init_processor, init_model
 from models.model_setup import init_model_and_processor
 from configs.config import config
 import time
@@ -16,10 +15,6 @@ class Donut(L.LightningModule):
         self.processor = None
     
     def setup(self, stage=None):
-        print("="*30)
-        print(f"stage: {stage}")
-        print("="*30)
-
         self.model, self.processor = init_model_and_processor()
     
     def training_step(self, batch, batch_idx):
@@ -85,9 +80,3 @@ class Donut(L.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=config.training.lr)
         return optimizer
-    
-    # def on_train_start(self):
-    #     print("학습을 시작합니다!\n")
-    #     print("pad_token_id 와 decoder_start_token_id 를 설정합니다!\n")
-    #     self.model.config.pad_token_id = self.processor.tokenizer.pad_token_id
-    #     self.model.config.decoder_start_token_id = self.processor.tokenizer.convert_tokens_to_ids(['<s_cord-v2>'])[0]

@@ -5,15 +5,16 @@ from torch.utils.data import Dataset
 from configs.config import config
 
 class BRCDataset(Dataset):
-    def __init__(self, dataset_dir, processor):
+    def __init__(self, dataset_dir, processor, task):
         """
         dataset_dir: donut_dataset 폴더 경로
         processor: DonutProcessor
         """
         self.processor = processor
         self.max_length = config.model.max_length
+        self.task = task
 
-        annotation_dir = os.path.join(dataset_dir, "donut_format")
+        annotation_dir = os.path.join(dataset_dir, self.task, "annotations")
         annotation_files = [
             f for f in os.listdir(annotation_dir) if f.endswith(".json")
         ]
@@ -26,7 +27,7 @@ class BRCDataset(Dataset):
                 self.annotations.append(data)
         
         # 이미지가 저장된 디렉토리 경로
-        self.images_dir = os.path.join(dataset_dir, "images")
+        self.images_dir = os.path.join(dataset_dir, self.task, "images")
 
     def __len__(self):
         return len(self.annotations)
@@ -35,7 +36,7 @@ class BRCDataset(Dataset):
         ann = self.annotations[idx]
         ann_image_path = ann["image"]
         image_path = os.path.join(self.images_dir, os.path.basename(ann_image_path))
-        ground_truth = ann["ground_truth"]
+        ground_truth = ann["gt"]
 
         # 실제 이미지 경로 구성
         image = Image.open(image_path).convert("RGB")

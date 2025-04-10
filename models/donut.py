@@ -18,7 +18,6 @@ class Donut(L.LightningModule):
         self.model, self.processor = init_model_and_processor()
     
     def training_step(self, batch, batch_idx):
-        print(f"[시간 측정] training_step 시작: {time.strftime('%Y-%m-%d %H:%M:%S')}")
         pixel_values, labels = batch['pixel_values'], batch['labels']
         
         outputs = self.model(pixel_values, labels=labels)

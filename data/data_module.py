@@ -46,11 +46,13 @@ class DocumentDataset(L.LightningDataModule):
         if stage == 'fit' or stage is None:
             self.train_dataset = BRCDataset(
                                     dataset_dir=config.data.dataset_name_or_path,
-                                    processor=self.processor
+                                    processor=self.processor,
+                                    task='train'
                                 )
             self.valid_dataset = BRCDataset(
-                                    dataset_dir='/purestorage/AILAB/AI_2/datasets/OCR/03_BRCDataset/val',
-                                    processor=self.processor
+                                    dataset_dir=config.data.dataset_name_or_path,
+                                    processor=self.processor,
+                                    task='validation'
                                 )
         # if stage == 'test' or stage is None:
         #     self.test_dataset = CORDDataset(model=self.model, processor=self.processor, split="test", task_start_token="<s_cord-v2>", prompt_end_token="<s_cord-v2>",
